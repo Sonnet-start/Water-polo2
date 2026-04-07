@@ -1,0 +1,40 @@
+.app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+h1 {
+  margin-bottom: 10px;
+  color: #fff;
+}
+
+.score {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 15px;
+  font-size: 18px;
+  color: #fff;
+}
+
+.shoot-btn {
+  margin-top: 15px;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.shoot-btn:hover {
+  background-color: #c0392b;
+}
+
+.instructions {
+  margin-top: 20px;
+  color: #aaa;
+  font-size: 14px;
+}

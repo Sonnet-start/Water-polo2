@@ -1,0 +1,33 @@
+.player {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 2px solid;
+}
+
+.player.white {
+  background-color: transparent;
+  border-color: #fff;
+}
+
+.player.blue {
+  background-color: #3498db;
+  border-color: #2980b9;
+}
+
+.player.red {
+  background-color: #e74c3c;
+  border-color: #c0392b;
+}
+
+.player.selected {
+  box-shadow: 0 0 0 3px #f1c40f;
+}
+
+.player:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+}

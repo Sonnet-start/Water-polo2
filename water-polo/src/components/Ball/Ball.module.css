@@ -1,0 +1,9 @@
+.ball {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background-color: #f1c40f;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
