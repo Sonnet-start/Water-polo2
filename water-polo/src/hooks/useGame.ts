@@ -3,6 +3,10 @@ import { FIELD_HEIGHT, FIELD_WIDTH, GOAL_WIDTH, GOAL_Y } from "../constants/fiel
 import { scenarios } from "../constants/scenarios";
 import type { Ball, GameState, Player, Position, Scenario } from "../types";
 
+const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
+
+const MOVE_STEP = 15;
+
 const getRandomAttacker = (players: Player[]): Player | null => {
   const attackers = players.filter((p) => p.role === "attacker");
   if (attackers.length === 0) return null;
@@ -34,6 +38,15 @@ const moveDefenders = (players: Player[]): Player[] => {
   });
 };
 
+const movePlayer = (players: Player[], playerId: string, newPosition: Position): Player[] => {
+  return players.map((player) => {
+    if (player.id !== playerId) return player;
+    const clampedX = clamp(newPosition.x, 10, FIELD_WIDTH - 10);
+    const clampedY = clamp(newPosition.y, 10, FIELD_HEIGHT - 10);
+    return { ...player, position: { x: clampedX, y: clampedY } };
+  });
+};
+
 const moveGoalkeeper = (goalkeeper: Player, ballPosition: Position): Player => {
   const goalCenterY = GOAL_Y + GOAL_WIDTH / 2;
   const maxAngle = 60;
@@ -59,6 +72,7 @@ export function useGame(initialScenario: Scenario = "equal-6x6") {
       ball: getInitialBall(players),
       scenario: initialScenario,
       selectedPlayerId: null,
+      passCount: 0,
     };
   });
   const [score, setScore] = useState({ white: 0, blue: 0 });
@@ -70,6 +84,7 @@ export function useGame(initialScenario: Scenario = "equal-6x6") {
       ball: getInitialBall(players),
       scenario,
       selectedPlayerId: null,
+      passCount: 0,
     });
   }, []);
 
@@ -126,20 +141,53 @@ export function useGame(initialScenario: Scenario = "equal-6x6") {
           holderId: clickedPlayer.id,
         };
 
-        const updatedPlayers = moveDefenders(prev.players);
+        let updatedPlayers = prev.players;
+        if (prev.passCount === 0) {
+          updatedPlayers = moveDefenders(prev.players);
+        }
+
         const goalkeeper = updatedPlayers.find((p) => p.role === "goalkeeper");
         if (goalkeeper) {
           const movedGoalkeeper = moveGoalkeeper(goalkeeper, newBall.position);
-          const playersWithGoalkeeper = updatedPlayers.map((p) =>
+          updatedPlayers = updatedPlayers.map((p) =>
             p.role === "goalkeeper" ? movedGoalkeeper : p,
           );
-          return { ...prev, ball: newBall, selectedPlayerId: null, players: playersWithGoalkeeper };
         }
 
-        return { ...prev, ball: newBall, selectedPlayerId: null, players: updatedPlayers };
+        return {
+          ...prev,
+          ball: newBall,
+          selectedPlayerId: null,
+          players: updatedPlayers,
+          passCount: prev.passCount + 1,
+        };
       }
 
       return { ...prev, selectedPlayerId: null };
+    });
+  }, []);
+
+  const resetPassCount = useCallback(() => {
+    setState((prev) => ({ ...prev, passCount: 0 }));
+  }, []);
+
+  const movePlayerPosition = useCallback((playerId: string, position: Position) => {
+    setState((prev) => {
+      const updatedPlayers = movePlayer(prev.players, playerId, position);
+      return { ...prev, players: updatedPlayers };
+    });
+  }, []);
+
+  const moveSelectedPlayer = useCallback((dx: number, dy: number) => {
+    setState((prev) => {
+      if (!prev.selectedPlayerId) return prev;
+      const updatedPlayers = prev.players.map((p) => {
+        if (p.id !== prev.selectedPlayerId) return p;
+        const newX = clamp(p.position.x + dx, 10, FIELD_WIDTH - 10);
+        const newY = clamp(p.position.y + dy, 10, FIELD_HEIGHT - 10);
+        return { ...p, position: { x: newX, y: newY } };
+      });
+      return { ...prev, players: updatedPlayers };
     });
   }, []);
 
@@ -149,5 +197,8 @@ export function useGame(initialScenario: Scenario = "equal-6x6") {
     selectPlayer,
     shoot,
     score,
+    movePlayerPosition,
+    moveSelectedPlayer,
+    resetPassCount,
   };
 }

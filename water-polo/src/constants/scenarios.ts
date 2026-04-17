@@ -66,9 +66,8 @@ export const scenarios: Record<Scenario, Player[]> = {
     createDefender("d1", 40, centerY - 90, "a1"),
     createDefender("d2", 40, centerY, "a2"),
     createDefender("d3", 40, centerY + 90, "a3"),
-    createDefender("d4", LINE_2M - 20, centerY - 80, "a4"),
-    createDefender("d5", LINE_2M - 20, centerY, "a5"),
-    createDefender("d6", LINE_2M - 20, centerY + 80, "a6"),
+    createDefender("d4", LINE_2M - 20, centerY - 40, "a4"),
+    createDefender("d5", LINE_2M - 20, centerY + 40, "a6"),
     createGoalkeeper("g1", 20, GOAL_Y + GOAL_WIDTH / 2),
   ],
   "m-zone": [

@@ -27,4 +27,5 @@ export interface GameState {
   ball: Ball;
   scenario: Scenario;
   selectedPlayerId: string | null;
+  passCount: number;
 }
